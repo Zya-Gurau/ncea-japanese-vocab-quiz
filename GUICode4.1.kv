@@ -1,0 +1,536 @@
+#:kivy 1.8
+#:import Window kivy.core.window.Window
+#:import hex kivy.utils.get_color_from_hex
+#:import Factory kivy.factory.Factory
+
+#sorts all of the screens
+WindowManager:
+    MainMenu:
+    GameMenuOne:
+    SecondaryMenu:
+    Game:
+    CorrectScreen:
+    InCorrectScreen:
+    EndScreen:
+    RevisionList:
+
+#Each screen is attached to the screen class of the same name in the python file
+
+<MainMenu>:
+
+    name: "MainMenu"
+    GridLayout:
+        cols: 1
+
+        #creates label
+        Label:
+            text: root.title
+            font_size: 90
+            font_name: 'fonts\Meiryo-01'
+            color: hex('#000000')
+
+        #creates button
+        Button:
+            text: root.buttonOne
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            font_name: 'fonts\Meiryo-01'
+            color: hex('#1ebf19')
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                app.root.current = "SecondaryMenu"
+                root.manager.transition.direction = "left"
+        
+        #creates button
+        Button:
+            text: root.buttonTwo
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            font_name: 'fonts\Meiryo-01'
+            color: hex('#d10d0d')
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                app.stop() 
+
+
+<SecondaryMenu>:
+
+    name: "SecondaryMenu"
+
+    on_enter:
+
+
+    GridLayout:
+        cols: 1
+
+        #creates label
+        Label:
+            text: root.Title
+            font_size: 90
+            font_name: 'fonts\Meiryo-01'
+            color: hex('#000000')
+
+        #creates button
+        Button:
+            text: root.ConStart
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#1ebf19')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                root.ConStartFunc()
+                root.manager.transition.direction = "left"
+
+        #creates button
+        Button:
+            text: root.Revis
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#1ebf19')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                app.root.current = "RevisionList"
+                root.manager.transition.direction = "left"
+
+        #creates button
+        Button:
+            text: root.Reset
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#d10d0d')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                root.ResetFunc()
+                app.root.current = "GameMenuOne"
+                root.manager.transition.direction = "left"
+
+        #creates button
+        Button:
+            text: root.Back
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#000000')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                app.root.current = "MainMenu"
+                root.manager.transition.direction = "right"
+
+<GameMenuOne>:
+    name: "GameMenuOne"
+
+
+    on_enter:
+        root.onStart()
+
+    GridLayout:
+        cols: 1
+
+        #creates label
+        Label: 
+            text: root.Title 
+            font_size: 30
+            font_name: 'fonts\Meiryo-01'
+            color: hex('#000000')
+
+        #creates button
+        Button:
+            text: root.LevelOne
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#1ebf19')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                root.levelOne()
+                app.root.current = "Game"
+                root.manager.transition.direction = "left"
+
+        #creates button
+        Button:
+            text: root.LevelTwo
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#e0cb0b')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                root.levelTwo()
+                app.root.current = "Game"
+                root.manager.transition.direction = "left"
+
+        #creates button
+        Button:
+            text: root.LevelThree
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#d10d0d')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                root.levelThree()
+                app.root.current = "Game"
+                root.manager.transition.direction = "left"
+
+
+    
+        #creates button               
+        Button:
+            text: root.Back
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#000000')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                app.root.current = "MainMenu"
+                root.manager.transition.direction = "right"
+
+
+
+    
+
+
+
+
+        
+
+
+
+<Game>:
+    name: "Game"  
+
+    on_enter: root.Start()
+
+    GridLayout:
+        cols: 1
+
+        #creates progress bar
+        ProgressBar:
+			id: my_progress_bar
+			# Set Default Value
+			# value: .25
+			min: 0
+			max: 1
+			pos_hint: {'x': 200}
+			size_hint_x: 0.01  #0.8
+          
+            thickness: 300
+
+        #creates label
+        Label:
+            text: "Japanese Word:"
+            font_size: 50
+            color: hex('#000000')
+
+        #creates label
+        Label:
+            text: root.JapaneseWord
+            font_size: 40
+            font_name: 'fonts\Meiryo-01'
+            color: hex('#000000')
+
+        GridLayout:
+            cols: 2
+
+            #creates button
+            Button:
+                id: One
+                text: root.AnswerOne
+                font_size: 30
+                color: hex('#000000')
+                background_normal: ''
+                background_down: ''
+                on_press: self.background_color = hex('#898383')
+                on_release:
+                    self.background_color = hex("#FFFFFF")
+                    root.Submit(self)
+                    root.ProgressUpdate()
+
+            #creates button
+            Button:
+                id: Two
+                text: root.AnswerTwo
+                font_size: 30
+                color: hex('#000000')
+                background_normal: ''
+                background_down: ''
+                on_press: self.background_color = hex('#898383')
+                on_release:
+                    self.background_color = hex("#FFFFFF")
+                    root.Submit(self)
+                    root.ProgressUpdate()
+
+            #creates button
+            Button:
+                id: Three
+                text: root.AnswerThree
+                font_size: 30
+                color: hex('#000000')
+                background_normal: ''
+                background_down: ''
+                on_press: self.background_color = hex('#898383')
+                on_release:
+                    self.background_color = hex("#FFFFFF")
+                    root.Submit(self)
+                    root.ProgressUpdate()
+
+            #creates button
+            Button:
+                id: Four
+                text: root.AnswerFour
+                font_size: 30
+                color: hex('#000000')
+                background_normal: ''
+                background_down: ''
+                on_press: self.background_color = hex('#898383')
+                on_release:
+                    self.background_color = hex("#FFFFFF")
+                    root.Submit(self)
+                    root.ProgressUpdate()
+
+            #creates label  
+            Label:
+                text: ""
+
+            #creates label
+            Label: 
+                text: ""   
+
+            GridLayout:
+                cols: 2
+
+
+                #creates button
+                Button:
+                    text: root.Back
+                    background_normal: ''
+                    background_down: ''
+                    font_size: 50
+                    color: hex('#000000')
+                    font_name: 'fonts\Meiryo-01'
+                    on_press: self.background_color = hex('#898383')
+                    on_release: 
+                        self.background_color = hex("#FFFFFF")
+                        app.root.current = "SecondaryMenu"        
+                        root.manager.transition.direction = "right"
+
+            #creates label
+            Label:
+                text: "Score: "+ root.Score
+                font_size: 50
+                color: hex('#1ebf19')
+
+            #creates label
+            Label:
+                text: ""
+
+            #creates label
+            Label:
+                text:""
+
+
+
+
+
+
+    
+
+
+<CorrectScreen>:
+    name: "CorrectScreen"
+    
+    on_enter: root.Skip()
+
+    GridLayout:
+        cols: 1
+
+        #creates label
+        Label:
+            text: "Correct"
+            background_normal: ''
+            background_down: ''
+            font_size: 100
+            color: hex('#1ebf19')
+    
+<InCorrectScreen>:
+    name: "InCorrectScreen"
+
+    on_enter: root.Skip()
+
+    GridLayout:
+        cols: 1
+
+        #creates label
+        Label:
+            text: "Incorrect"
+            background_normal: ''
+            background_down: ''
+            font_size: 100
+            color: hex('#d10d0d')
+    
+
+
+<EndScreen>:
+
+    name: "EndScreen"
+
+    on_enter: 
+        root.Start()
+
+
+    GridLayout:
+        cols: 1
+    
+        #creates progress bar
+        ProgressBar:
+			id: my_progress_bar
+			min: 0
+			max: 1
+			pos_hint: {'x': 200}
+			size_hint_x: 0.001  #0.8
+
+        #creates label
+        Label:
+            text: "You finished with a score of:"
+            font_size: 50
+            color: hex('#000000')
+
+        #creates label
+        Label: 
+            text: root.ScoreVal
+            font_size: 50
+            color: hex('#000000')
+
+        #creates button
+        Button:
+            text: root.Revis
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#1ebf19')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                app.root.current = "RevisionList"
+                root.manager.transition.direction = "left"
+
+        #creates button
+        Button:
+            text: root.Back
+            background_normal: ''
+            background_down: ''
+            font_size: 50
+            color: hex('#000000')
+            font_name: 'fonts\Meiryo-01'
+            on_press: self.background_color = hex('#898383')
+            on_release: 
+                self.background_color = hex("#FFFFFF")
+                app.root.current = "MainMenu"
+                root.manager.transition.direction = "right"
+
+
+
+        
+
+            
+            
+
+
+<RevisionList>:
+    name: "RevisionList"
+    on_enter: 
+        root.Start()
+        
+    GridLayout:
+        cols: 1
+
+        #creates label
+        Label:
+            text: root.CurrentJapaneseWord
+            font_size: 50
+            font_name: 'fonts\Meiryo-01'
+            color: hex('#000000')
+
+        #creates label
+        Label:
+            text: root.CurrentEnglishWord
+            font_size: 30
+            color: hex('#000000')
+
+        #creates label
+        Label:
+            text:
+
+        GridLayout:
+            cols: 3
+
+            #creates button
+            Button:
+                text: root.Back
+                background_normal: ''
+                background_down: ''
+                font_size: 50
+                color: hex('#000000')
+                font_name: 'fonts\Meiryo-01'
+                on_press: self.background_color = hex('#898383')
+                on_release: 
+                    self.background_color = hex("#FFFFFF")
+                    app.root.current = "SecondaryMenu"        
+                    root.manager.transition.direction = "right"
+
+            #creates button
+            Button:
+                text: "<"
+                background_normal: ''
+                background_down: ''
+                font_size: 50
+                color: hex('#000000')
+                on_press: self.background_color = hex('#898383')
+                on_release: 
+                    self.background_color = hex("#FFFFFF")
+                    root.LastWord()   
+                    root.manager.transition.direction = "right"
+
+            #creates button
+            Button:
+                text: ">"
+                background_normal: ''
+                background_down: ''
+                font_size: 50
+                color: hex('#000000')
+                on_press: self.background_color = hex('#898383')
+                on_release: 
+                    self.background_color = hex("#FFFFFF")
+                    root.NextWord()   
+                    root.manager.transition.direction = "right"
+
+
+
+        
+
+            
