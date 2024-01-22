@@ -31,7 +31,7 @@ SHARED_VARIABLES = SharedVariables()
 # The strings in the word lists are structured with the japanese word and the english counterpart seperated by a space 
 # the two words are seperateed into the display word and the answer during processing.
 
-#this is the saving function !!!!!!!!!!! CHANGE THIS !!!!!!!!!!!!!!!!
+#this is the saving function 
 def exit_handler():
    SHARED_VARIABLES.save_variables() 
 
@@ -247,7 +247,6 @@ class InCorrectScreen(Screen):
 
 #when all of the words have been removed from the list you are sent to this screen
 class EndScreen(Screen):
-    
 
     ScoreVal = StringProperty() #makes ScoreVal word with kivy
 
@@ -257,11 +256,12 @@ class EndScreen(Screen):
 
     #called when you enter the screen
     def Start(self):
+        SHARED_VARIABLES.load_variables()
         #gets the current progres bar level
-        self.ids.my_progress_bar.value = shared_variables.CURRENT_PROGRESS_VALUE
+        self.ids.my_progress_bar.value = SHARED_VARIABLES.CURRENT_PROGRESS_VALUE
 
         #gets the current score
-        self.ScoreVal = str(shared_variables.SCORE)
+        self.ScoreVal = str(SHARED_VARIABLES.SCORE)
         
 
 
@@ -275,62 +275,32 @@ class RevisionList(Screen):
     #makes the values work with kivy
     CurrentEnglishWord = StringProperty()
     CurrentJapaneseWord = StringProperty()
-
+    RevisionCompareVal = 0
     Back = "返る" #Back
     
     #called on entry to the program
     def Start(self):
-        global Level 
-        global wordAmount 
-        global maxIndex 
-        global score   
-        global unprostring 
-        global Word 
-        global MaxCounterVal
-        global CorrectWord 
-        global ListLength 
-        global current 
-        global revList
-        global RevisionCompareVal
-
-        #gets the saved variables
-        with open('variables.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
-                WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current = pickle.load(f)
+        SHARED_VARIABLES.load_variables()
 
         try:
             #gets the word in the revision list with the index value equal to RevisionCompareVal and splits it and makes a list out of the two items
-            CurrentUnproWord = revList[RevisionCompareVal].split()
+            japanese_word, english_word = list(SHARED_VARIABLES.REVISION_DICT.items())[self.RevisionCompareVal]
 
-            self.CurrentJapaneseWord = CurrentUnproWord[0] #sets the japanese display word equal to the japanese item in the list
-            self.CurrentEnglishWord = CurrentUnproWord[1].replace("_", " ") #sets the english display word equal to the english item in the list
-        
+            self.CurrentJapaneseWord = japanese_word #sets the japanese display word equal to the japanese item in the list
+            self.CurrentEnglishWord = english_word #sets the english display word equal to the english item in the list
+       
         except:
             #sets the display words to be blank
-            self.CurrentJapaneseWord = ""
-            self.CurrentEnglishWord = ""
+            self.CurrentJapaneseWord = "gj"
+            self.CurrentEnglishWord = "g hk"
     
     #called when the next word button is pressed
     def NextWord(self):
-        global Level 
-        global wordAmount 
-        global maxIndex 
-        global score   
-        global unprostring 
-        global Word 
-        global MaxCounterVal
-        global CorrectWord 
-        global ListLength 
-        global current 
-        global revList
-        global RevisionCompareVal
-
-        #updates the variables
-        with open('variables.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
-                WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current = pickle.load(f)
+        SHARED_VARIABLES.load_variables()
 
         #if you haven't reached the end of the revision list it adds one to the revisioncompareval and calls the start function updating the display
-        if RevisionCompareVal < (len(revList)-1):
-            RevisionCompareVal += 1
+        if self.RevisionCompareVal < (len(SHARED_VARIABLES.REVISION_DICT)-1):
+            self.RevisionCompareVal += 1
             self.Start()
 
         #if you have reached the end of the revision list it calls the start function again without changing the variables meaning the displayed words will be the same
@@ -339,26 +309,11 @@ class RevisionList(Screen):
 
     #called when the previuos word button has been pressed
     def LastWord(self):
-        global Level 
-        global wordAmount 
-        global maxIndex 
-        global score   
-        global unprostring 
-        global Word 
-        global MaxCounterVal
-        global CorrectWord 
-        global ListLength 
-        global current 
-        global revList
-        global RevisionCompareVal
-
-        #updates the variables
-        with open('variables.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
-                WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current = pickle.load(f)
+        SHARED_VARIABLES.load_variables()
 
         #if you haven't reached the end of the revision list it subtracts one to the revisioncompareval and calls the start function updating the display
-        if RevisionCompareVal > 0:
-            RevisionCompareVal -= 1
+        if self.RevisionCompareVal > 0:
+            self.RevisionCompareVal -= 1
             self.Start()
 
         else: 
@@ -382,7 +337,6 @@ class NCEAJapaneseQuizApp(App):
     #builds the app 
     def build(self):
        return kv
-
 
 #runs the built app
 NCEAJapaneseQuizApp().run()
