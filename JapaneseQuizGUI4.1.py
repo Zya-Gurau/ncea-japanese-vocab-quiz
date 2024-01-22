@@ -1,3 +1,4 @@
+import json
 import random
 import time
 import kivy
@@ -60,18 +61,13 @@ RevisionCompareVal = 0  #used to determine what revision word should be diplayed
 #the saving and loading of variables is done using pickle
 
 
-#this is the saving function
+#this is the saving function !!!!!!!!!!! CHANGE THIS !!!!!!!!!!!!!!!!
 def exit_handler():
    with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
     pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
 
 #this triggers the save function at the closing of the program
 atexit.register(exit_handler)
-
-#A load function that can be called from anywhere
-def FullLoad():
-    with open('variables.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
-            WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current = pickle.load(f)
 
 class MainMenu(Screen):
        
@@ -91,78 +87,38 @@ class GameMenuOne(Screen):
     DisplayLevel = StringProperty()
 
     def onStart(self):
-        global WordList 
-        global revList 
-        global Level
-        global wordAmount 
-        global maxIndex 
-        global score   
-        global unprostring 
-        global Word 
-        global MaxCounterVal 
-        global CorrectWord 
-        global ListLength 
-        global current 
-
-        WordList = []
-        revList = []
-        Level = 0
-        wordAmount = 0
-        maxIndex = 0
-        score = 0   
-        unprostring = ""
-        Word = ""
-        MaxCounterVal = 0
-        CorrectWord = ""
-        ListLength = 0
-        current = 0
-    
+        shared_variables.LEVEL = 0
+        shared_variables.SCORE = 0
+        shared_variables.WORD_DICT = {}
     
     #these functions set up what level word list the player will be quized with
     # [DisplayLevel] is the string that shows the player their choice
-    # [MaxIndex] is used as the max number for range od the random word chooser  (had to subtract by one to get the index right)
     def levelOne(self):
-        global Level
-        global WordList
-        global LevelOneWordList
-        global maxIndex
-        global ListLength
-        Level = 2
-        WordList = LevelOneWordList
-        ListLength = len(WordList)
-        maxIndex = len(WordList) - 1
-        with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-            pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
+        # open the level one vocab file
+        vocab_file = open('levelonevocab.json')
+ 
+        shared_variables.LEVEL = 1 
+        shared_variables.WORD_DICT = json.load(vocab_file) 
+        shared_variables.WORD_LIST_LENGTH = len(shared_variables.WORD_DICT)
         self.DisplayLevel = "NCEA Level 2"
 
     def levelTwo(self):
-        global Level
-        global WordList
-        global LevelTwoWordList
-        global maxIndex
-        global ListLength
-        Level = 2
-        WordList = LevelTwoWordList
-        ListLength = len(WordList)
-        maxIndex = len(WordList) - 1
-        with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-            pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
+        # open the level two vocab file
+        vocab_file = open('leveltwovocab.json')
+ 
+        shared_variables.LEVEL = 2 
+        shared_variables.WORD_DICT = json.load(vocab_file) 
+        shared_variables.WORD_LIST_LENGTH = len(shared_variables.WORD_DICT)
         self.DisplayLevel = "NCEA Level 2"
         
     def levelThree(self):
-        global Level
-        global WordList
-        global LevelThreeWordList
-        global maxIndex
-        global ListLength
-        Level = 3
-        WordList = LevelThreeWordList
-        ListLength = len(WordList)
-        maxIndex = len(WordList) - 1
-        with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-            pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
+        # open the level three vocab file
+        vocab_file = open('levelthreevocab.json')
+ 
+        shared_variables.LEVEL = 3 
+        shared_variables.WORD_DICT = json.load(vocab_file) 
+        shared_variables.WORD_LIST_LENGTH = len(shared_variables.WORD_DICT)
         self.DisplayLevel = "NCEA Level 3"
-
 
     pass
 
@@ -177,75 +133,21 @@ class SecondaryMenu(Screen):
     Title = "何をしたいですか？"  #(Title text) What would you like to do?      
     Back = "返る"                  #Back
 
-    #loads all of the global variables from the text file they're saved to
-    def Load(self):
-        global Level 
-        global wordAmount 
-        global maxIndex 
-        global score   
-        global unprostring 
-        global Word 
-        global MaxCounterVal
-        global CorrectWord 
-        global ListLength 
-        global current 
-
-        with open('variables.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
-            WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current = pickle.load(f)
-
     #sets all of the global variables to their default values and saves over any instance of them that already exists
     def ResetFunc(self):
-        global Level 
-        global wordAmount 
-        global maxIndex 
-        global score   
-        global unprostring 
-        global Word 
-        global MaxCounterVal
-        global CorrectWord 
-        global ListLength 
-        global current 
-        WordList = []
-        revList = []
-        Level = 0
-        wordAmount = 0
-        maxIndex = 0
-        score = 0   
-        unprostring = ""
-        Word = ""
-        MaxCounterVal = 0
-        CorrectWord = ""
-        ListLength = 0
-        current = 0
-
-        with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-            pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
+        shared_variables.LEVEL = 0
+        shared_variables.SCORE = 0
+        shared_variables.WORD_DICT = {}
 
     #if there are already modified variables this function takes you to the game screen
     #if the variables are in their default states it sends you to the level selection menu
     def ConStartFunc(self):
-        global Level 
-        global wordAmount 
-        global maxIndex 
-        global score   
-        global unprostring 
-        global Word 
-        global MaxCounterVal
-        global CorrectWord 
-        global ListLength 
-        global current 
-        global WordList
 
-        with open('variables.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
-            WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current = pickle.load(f)
-
-        if Level == 0:
+        if shared_variables.LEVEL == 0:
             self.ResetFunc()
             self.manager.current = "GameMenuOne"
 
-        if Level != 0:
-            with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-                pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
+        if shared_variables.LEVEL != 0:
             self.manager.current = "Game"
     
     pass
@@ -263,159 +165,87 @@ class Game(Screen):
     AnswerThree = StringProperty()
     AnswerFour = StringProperty()
 
-    
-
     Back = "返る" #back 
-
-    OtherCounterVal = 0 #debug
     
     Score = StringProperty() #Makes ScoreVal work with kivy
    
     #on start an unprocessed word is taken from WordList and is split inot its japanese display word and its correct english answer.
     def Start(self):
-        global wordAmount
-        global WordList
-        global revList
-        global maxIndex
-        global unprostring
-        global Word
-        global score
-        global current
-        global CorrectWord
-        global Level 
-        global MaxCounterVal
-        global ListLength 
-        global PossibleAnswers
+        answer_file = open('possibleanswers.json')
+        PossibleAnswers = json.load(answer_file) 
 
-        #load in the saved global variables
-        with open('variables.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
-                WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current = pickle.load(f)
-        
-
-
-        self.Score = str(score)
-        self.ids.my_progress_bar.value = current
+        self.Score = str(shared_variables.SCORE)
+        self.ids.my_progress_bar.value = shared_variables.CURRENT_PROGRESS_VALUE
         
         #if Start() is called and there are no more words left in the list it sends you to the end screen
-        if len(WordList) == 1:
-            print("wags")
-            self.manager.current = "EndScreen"
-        
-
-        #max index is used to set the upper value of the random range used to pick the random word
-        maxIndex = len(WordList) - 1
-
-        #if Start() is called and there are no more words left in the list it sends you to the end screen
-        if maxIndex == -1:
+        if len(shared_variables.WORD_DICT) == 0:
             self.manager.current = "EndScreen"
 
-        #debug lines
-        print(str(maxIndex))
-        print(len(WordList))
-        print(WordList)
-
-        #picks a random word from the word list 
-        unprostring = WordList[random.randint(0, maxIndex)]
+        japanese_word, english_word = random.choice(list(shared_variables.WORD_DICT.items()))
         
-        #splits the word into two items in a list (japanese - english)
-        Word = unprostring.split()
-
         #defines an empty list where the correct and incorrect answers will be added to
         AnswerList = []
-        AnswerList.append(Word[1]) #adds correct answer
+        AnswerList.append(english_word) #adds correct answer
         AnswerList.append(PossibleAnswers[random.randint(0, 894)]) #adds random incorrect answer from list of all possible answers
         AnswerList.append(PossibleAnswers[random.randint(0, 894)]) #adds random incorrect answer from list of all possible answers
         AnswerList.append(PossibleAnswers[random.randint(0, 894)]) #adds random incorrect answer from list of all possible answers
         random.shuffle(AnswerList) #shuffles the list so correct and incorrect answers are in random order
 
-        self.JapaneseWord = Word[0] #sets the "display word" as the japanese of the random word chosen above
-        CorrectWord = Word[1] #sets the "answer word" as the english of the random word chosen above
+        shared_variables.CURRENT_JAPANESE_WORD = japanese_word #sets the "display word" as the japanese of the random word chosen above
+        shared_variables.CURRENT_ENGLISH_WORD = english_word #sets the "answer word" as the english of the random word chosen above
+        self.JapaneseWord = shared_variables.CURRENT_JAPANESE_WORD
 
-        self.AnswerOne = AnswerList[0].replace("_", " ") #replaces underscores in the answer with spaces
-        self.AnswerTwo = AnswerList[1].replace("_", " ") #replaces underscores in the answer with spaces
-        self.AnswerThree = AnswerList[2].replace("_", " ") #replaces underscores in the answer with spaces
-        self.AnswerFour = AnswerList[3].replace("_", " ") #replaces underscores in the answer with spaces
-
-        
-        #if self.AnswerOne.replace(" ", "_") == Word[1]:
-            #CorrectId = "One"
-
-        #if self.AnswerTwo.replace(" ", "_") == Word[1]:
-            #CorrectId = "Two"
-
-        #if self.AnswerThree.replace(" ", "_") == Word[1]:
-            #CorrectId = "Three"
-
-        #if self.AnswerFour.replace(" ", "_") == Word[1]:
-            #CorrectId = "Four"
-    
-
+        self.AnswerOne = AnswerList[0]
+        self.AnswerTwo = AnswerList[1]
+        self.AnswerThree = AnswerList[2]
+        self.AnswerFour = AnswerList[3]
 
     def ProgressUpdate(self):
-        global WordList
-        global ListLength
-        global current
 
         #gets the current progress value 
-        current = self.ids.my_progress_bar.value
+        shared_variables.CURRENT_PROGRESS_VALUE = self.ids.my_progress_bar.value
 
         #defines the maximum progress value as one 
-        if current == 1:
-            current = 0
+        if shared_variables.CURRENT_PROGRESS_VALUE == 1:
+            shared_variables.CURRENT_PROGRESS_VALUE = 0
 
         #adds on increment to the progress value 
-        current += (1/int(ListLength))
+        shared_variables.CURRENT_PROGRESS_VALUE += (1/shared_variables.WORD_LIST_LENGTH)
 
         #updates the progress bar with the current progress value
-        self.ids.my_progress_bar.value = current
+        self.ids.my_progress_bar.value = shared_variables.CURRENT_PROGRESS_VALUE
 
-        #saves the new variables
-        with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-            pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
 
     #is called whenever an answer button is clicked
     def Submit(self, instance):
-        global score
-        global streak
-        global WordList
-        global wordAmount
-        global Word
-        global MaxCounterVal
-        global AttemptCounter
-        global revList
-        global unprostring
-        global AttemptCounter
-        global CorrectWord
-        global ColourOne
         
         #gets the text of the pressed button
         PressedButton = instance.text
 
         #if the text of the pressed button (with underscores instead of spaces) is equal to the CorrectWord then it adds one to score,
         #removes the unprocessed version of the word from the list, saves the new variables to the text file and sends you to the correct screen
-        if PressedButton.replace(" ", "_") == CorrectWord:
-            WordList.remove(unprostring)
-            score += 1
-            self.Score = str(score)
+        if PressedButton == CorrectWord:
+
+            del shared_variables.WORD_DICT[shared_variables.CURRENT_JAPANESE_WORD]
+
+            shared_variables.SCORE += 1
+            self.Score = str(shared_variables.SCORE)
             self.manager.current = "CorrectScreen"
-            with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-                pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
+
+            #!!!!! SAVE SHARED VARIABLES  !!!!!#
 
             
         #if the text of the pressed button (with underscores instead of spaces) is not equal to the CorrectWord then it removes the uprocessed word from the list and adds it to the revision list, its saves the variaables ot the text file and send you to the incorrect screen  
-        if PressedButton.replace(" ", "_") != CorrectWord:
-            WordList.remove(unprostring)
-            revList.append(unprostring)
+        if PressedButton != CorrectWord:
+
+            del shared_variables.WORD_DICT[shared_variables.CURRENT_JAPANESE_WORD]
+
+            #revList.append(unprostring)
+
             self.manager.current = "InCorrectScreen"
-            with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-                pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
 
-           
-            
-    
 
-    
-    
+            #!!!!! SAVE SHARED VARIABLES  !!!!!#
 
     pass
 
@@ -452,14 +282,11 @@ class EndScreen(Screen):
 
     #called when you enter the screen
     def Start(self):
-        global current
-        global score
-
         #gets the current progres bar level
-        self.ids.my_progress_bar.value = current
+        self.ids.my_progress_bar.value = shared_variables.CURRENT_PROGRESS_VALUE
 
         #gets the current score
-        self.ScoreVal = str(score)
+        self.ScoreVal = str(shared_variables.SCORE)
         
 
 
