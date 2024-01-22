@@ -19,7 +19,10 @@ from kivy.uix.progressbar import ProgressBar
 import atexit
 import pickle
 import shared_variables
+from shared_variables import SharedVariables
 Window.clearcolor = (1, 1, 1, 1)
+
+SHARED_VARIABLES = SharedVariables()
 
 #Notes:
 #Because kivy cannot  display japanese text within it's own code, any japanese that needs to displayed must be assigned to a
@@ -28,43 +31,9 @@ Window.clearcolor = (1, 1, 1, 1)
 # The strings in the word lists are structured with the japanese word and the english counterpart seperated by a space 
 # the two words are seperateed into the display word and the answer during processing.
 
-
-#Words of the chosen level are moved into this list 
-#words are processed out of this list and not one of the original lists because an intact copy of all the words needs to exist
-#during the program words are deleted from the list
-WordList = []
-
-#when the player answers incorrectly the word is deleted from WordList and put into revision list 
-revList = []
-
-
-Level = 0        # The current level of vocab 
-wordAmount = 0   # this is a holdover variable used when debuging the program, it does nothing functionaly
-maxIndex = 0     #stores the current length of the word list, (used when picking a random word)
-score = 0        #stores the players score
-unprostring = "" #stores the current un-processed string from WordList
-Word = []        #stores the the english word and the japanese word as two seperate items in a list.
-MaxCounterVal = 0  # A debug variable that serves no functional prupose
-CorrectWord = ""   #is the string with the current correct english word
-ListLength = 0     # is the full length of the chosen levels vocab list (once asigned it's a static value) (used for the progress bar)
-current = 0        #is the current progress value which determines the length of the progress bar
-RevisionCompareVal = 0  #used to determine what revision word should be diplayed
-
-
-
-#Order of variable storage:
-#   WordList, RevList, Level, WordAmount, MaxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current
-
-
-
-
-#the saving and loading of variables is done using pickle
-
-
 #this is the saving function !!!!!!!!!!! CHANGE THIS !!!!!!!!!!!!!!!!
 def exit_handler():
-   with open('variables.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-    pickle.dump([WordList, revList, Level, wordAmount, maxIndex, score, unprostring, Word, MaxCounterVal, CorrectWord, ListLength, current], f) 
+   SHARED_VARIABLES.save_variables() 
 
 #this triggers the save function at the closing of the program
 atexit.register(exit_handler)
@@ -85,40 +54,39 @@ class GameMenuOne(Screen):
     LevelThree = "レベル三"         #Level three button
     Back = "返る"                   #Back button
     DisplayLevel = StringProperty()
-
     def onStart(self):
-        shared_variables.LEVEL = 0
-        shared_variables.SCORE = 0
-        shared_variables.WORD_DICT = {}
+        SHARED_VARIABLES.LEVEL = 0
+        SHARED_VARIABLES.SCORE = 0
+        SHARED_VARIABLES.WORD_DICT = {}
     
     #these functions set up what level word list the player will be quized with
     # [DisplayLevel] is the string that shows the player their choice
     def levelOne(self):
         # open the level one vocab file
         vocab_file = open('levelonevocab.json')
- 
-        shared_variables.LEVEL = 1 
-        shared_variables.WORD_DICT = json.load(vocab_file) 
-        shared_variables.WORD_LIST_LENGTH = len(shared_variables.WORD_DICT)
+        SHARED_VARIABLES.LEVEL = 1 
+        SHARED_VARIABLES.WORD_DICT = json.load(vocab_file) 
+        SHARED_VARIABLES.WORD_LIST_LENGTH = len(SHARED_VARIABLES.WORD_DICT)
         self.DisplayLevel = "NCEA Level 2"
+        SHARED_VARIABLES.save_variables()
 
     def levelTwo(self):
         # open the level two vocab file
         vocab_file = open('leveltwovocab.json')
- 
-        shared_variables.LEVEL = 2 
-        shared_variables.WORD_DICT = json.load(vocab_file) 
-        shared_variables.WORD_LIST_LENGTH = len(shared_variables.WORD_DICT)
+        SHARED_VARIABLES.LEVEL = 2 
+        SHARED_VARIABLES.WORD_DICT = json.load(vocab_file) 
+        SHARED_VARIABLES.WORD_LIST_LENGTH = len(SHARED_VARIABLES.WORD_DICT)
         self.DisplayLevel = "NCEA Level 2"
+        SHARED_VARIABLES.save_variables()
         
     def levelThree(self):
         # open the level three vocab file
         vocab_file = open('levelthreevocab.json')
- 
-        shared_variables.LEVEL = 3 
-        shared_variables.WORD_DICT = json.load(vocab_file) 
-        shared_variables.WORD_LIST_LENGTH = len(shared_variables.WORD_DICT)
+        SHARED_VARIABLES.LEVEL = 3 
+        SHARED_VARIABLES.WORD_DICT = json.load(vocab_file) 
+        SHARED_VARIABLES.WORD_LIST_LENGTH = len(SHARED_VARIABLES.WORD_DICT)
         self.DisplayLevel = "NCEA Level 3"
+        SHARED_VARIABLES.save_variables()
 
     pass
 
@@ -133,21 +101,21 @@ class SecondaryMenu(Screen):
     Title = "何をしたいですか？"  #(Title text) What would you like to do?      
     Back = "返る"                  #Back
 
+
     #sets all of the global variables to their default values and saves over any instance of them that already exists
     def ResetFunc(self):
-        shared_variables.LEVEL = 0
-        shared_variables.SCORE = 0
-        shared_variables.WORD_DICT = {}
+        SHARED_VARIABLES.reset()
 
     #if there are already modified variables this function takes you to the game screen
     #if the variables are in their default states it sends you to the level selection menu
     def ConStartFunc(self):
+        SHARED_VARIABLES.load_variables()
 
-        if shared_variables.LEVEL == 0:
+        if SHARED_VARIABLES.LEVEL == 0:
             self.ResetFunc()
             self.manager.current = "GameMenuOne"
 
-        if shared_variables.LEVEL != 0:
+        if SHARED_VARIABLES.LEVEL != 0:
             self.manager.current = "Game"
     
     pass
@@ -171,17 +139,20 @@ class Game(Screen):
    
     #on start an unprocessed word is taken from WordList and is split inot its japanese display word and its correct english answer.
     def Start(self):
+
+        SHARED_VARIABLES.load_variables()
+
         answer_file = open('possibleanswers.json')
         PossibleAnswers = json.load(answer_file) 
 
-        self.Score = str(shared_variables.SCORE)
-        self.ids.my_progress_bar.value = shared_variables.CURRENT_PROGRESS_VALUE
+        self.Score = str(SHARED_VARIABLES.SCORE)
+        self.ids.my_progress_bar.value = SHARED_VARIABLES.CURRENT_PROGRESS_VALUE
         
         #if Start() is called and there are no more words left in the list it sends you to the end screen
-        if len(shared_variables.WORD_DICT) == 0:
+        if len(SHARED_VARIABLES.WORD_DICT) == 0:
             self.manager.current = "EndScreen"
 
-        japanese_word, english_word = random.choice(list(shared_variables.WORD_DICT.items()))
+        japanese_word, english_word = random.choice(list(SHARED_VARIABLES.WORD_DICT.items()))
         
         #defines an empty list where the correct and incorrect answers will be added to
         AnswerList = []
@@ -191,61 +162,65 @@ class Game(Screen):
         AnswerList.append(PossibleAnswers[random.randint(0, 894)]) #adds random incorrect answer from list of all possible answers
         random.shuffle(AnswerList) #shuffles the list so correct and incorrect answers are in random order
 
-        shared_variables.CURRENT_JAPANESE_WORD = japanese_word #sets the "display word" as the japanese of the random word chosen above
-        shared_variables.CURRENT_ENGLISH_WORD = english_word #sets the "answer word" as the english of the random word chosen above
-        self.JapaneseWord = shared_variables.CURRENT_JAPANESE_WORD
+        SHARED_VARIABLES.CURRENT_JAPANESE_WORD = japanese_word #sets the "display word" as the japanese of the random word chosen above
+        SHARED_VARIABLES.CURRENT_ENGLISH_WORD = english_word #sets the "answer word" as the english of the random word chosen above
+        self.JapaneseWord = SHARED_VARIABLES.CURRENT_JAPANESE_WORD
 
         self.AnswerOne = AnswerList[0]
         self.AnswerTwo = AnswerList[1]
         self.AnswerThree = AnswerList[2]
         self.AnswerFour = AnswerList[3]
 
-    def ProgressUpdate(self):
+        SHARED_VARIABLES.save_variables()
 
+    def ProgressUpdate(self):
+        SHARED_VARIABLES.load_variables()
         #gets the current progress value 
-        shared_variables.CURRENT_PROGRESS_VALUE = self.ids.my_progress_bar.value
+        SHARED_VARIABLES.CURRENT_PROGRESS_VALUE = self.ids.my_progress_bar.value
 
         #defines the maximum progress value as one 
-        if shared_variables.CURRENT_PROGRESS_VALUE == 1:
-            shared_variables.CURRENT_PROGRESS_VALUE = 0
+        if SHARED_VARIABLES.CURRENT_PROGRESS_VALUE == 1:
+            SHARED_VARIABLES.CURRENT_PROGRESS_VALUE = 0
 
         #adds on increment to the progress value 
-        shared_variables.CURRENT_PROGRESS_VALUE += (1/shared_variables.WORD_LIST_LENGTH)
+        SHARED_VARIABLES.CURRENT_PROGRESS_VALUE += (1/SHARED_VARIABLES.WORD_LIST_LENGTH)
 
         #updates the progress bar with the current progress value
-        self.ids.my_progress_bar.value = shared_variables.CURRENT_PROGRESS_VALUE
+        self.ids.my_progress_bar.value = SHARED_VARIABLES.CURRENT_PROGRESS_VALUE
+
+        SHARED_VARIABLES.save_variables()
 
 
     #is called whenever an answer button is clicked
     def Submit(self, instance):
-        
+        SHARED_VARIABLES.load_variables()
         #gets the text of the pressed button
         PressedButton = instance.text
 
         #if the text of the pressed button (with underscores instead of spaces) is equal to the CorrectWord then it adds one to score,
         #removes the unprocessed version of the word from the list, saves the new variables to the text file and sends you to the correct screen
-        if PressedButton == CorrectWord:
+        if PressedButton == SHARED_VARIABLES.CURRENT_ENGLISH_WORD:
 
-            del shared_variables.WORD_DICT[shared_variables.CURRENT_JAPANESE_WORD]
+            del SHARED_VARIABLES.WORD_DICT[SHARED_VARIABLES.CURRENT_JAPANESE_WORD]
 
-            shared_variables.SCORE += 1
-            self.Score = str(shared_variables.SCORE)
+            SHARED_VARIABLES.SCORE += 1
+            self.Score = str(SHARED_VARIABLES.SCORE)
             self.manager.current = "CorrectScreen"
 
-            #!!!!! SAVE SHARED VARIABLES  !!!!!#
+            SHARED_VARIABLES.save_variables()
 
             
         #if the text of the pressed button (with underscores instead of spaces) is not equal to the CorrectWord then it removes the uprocessed word from the list and adds it to the revision list, its saves the variaables ot the text file and send you to the incorrect screen  
-        if PressedButton != CorrectWord:
+        if PressedButton != SHARED_VARIABLES.CURRENT_ENGLISH_WORD:
 
-            del shared_variables.WORD_DICT[shared_variables.CURRENT_JAPANESE_WORD]
+            del SHARED_VARIABLES.WORD_DICT[SHARED_VARIABLES.CURRENT_JAPANESE_WORD]
 
-            #revList.append(unprostring)
+            SHARED_VARIABLES.REVISION_DICT[SHARED_VARIABLES.CURRENT_JAPANESE_WORD] = SHARED_VARIABLES.CURRENT_ENGLISH_WORD
 
             self.manager.current = "InCorrectScreen"
 
 
-            #!!!!! SAVE SHARED VARIABLES  !!!!!#
+            SHARED_VARIABLES.save_variables()
 
     pass
 
@@ -333,8 +308,7 @@ class RevisionList(Screen):
             #sets the display words to be blank
             self.CurrentJapaneseWord = ""
             self.CurrentEnglishWord = ""
-
-        
+    
     #called when the next word button is pressed
     def NextWord(self):
         global Level 
